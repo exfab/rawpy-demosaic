@@ -65,6 +65,8 @@ popd
 
 # Install libraw
 libraw_dir=$(pwd)/external/LibRaw
+demosaic_gpl2_dir=$(pwd)/external/LibRaw-demosaic-pack-GPL2
+demosaic_gpl3_dir=$(pwd)/external/LibRaw-demosaic-pack-GPL3
 pushd external/LibRaw-cmake
 mkdir build
 cd build
@@ -76,9 +78,9 @@ cmake .. \
     -DENABLE_EXAMPLES=OFF \
     -DENABLE_RAWSPEED=OFF \
     -DENABLE_DEMOSAIC_PACK_GPL2=ON \
-    -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 \
+    -DDEMOSAIC_PACK_GPL2_RPATH=$demosaic_gpl2_dir \
     -DENABLE_DEMOSAIC_PACK_GPL3=ON \
-    -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 \
+    -DDEMOSAIC_PACK_GPL3_RPATH=$demosaic_gpl3_dir \
     -DCMAKE_BUILD_TYPE=Release
 make
 make install -j$(nproc)

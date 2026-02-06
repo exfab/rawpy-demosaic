@@ -209,6 +209,27 @@ def testAutoWhiteBalance():
     np.testing.assert_allclose(norm_used, norm_custom, rtol=1e-5)
 
 
+def testGPLDemosaicPacksAvailable():
+    # Verify that GPL2 and GPL3 demosaic packs were compiled in
+    assert rawpy.flags is not None, "flags dict should not be None"
+    assert rawpy.flags['DEMOSAIC_PACK_GPL2'] is True, "GPL2 demosaic pack not enabled"
+    assert rawpy.flags['DEMOSAIC_PACK_GPL3'] is True, "GPL3 demosaic pack not enabled"
+
+    # Verify support status via DemosaicAlgorithm
+    assert rawpy.DemosaicAlgorithm.AMAZE.isSupported is True, "AMAZE should be supported"
+    assert rawpy.DemosaicAlgorithm.LMMSE.isSupported is True, "LMMSE should be supported"
+    assert rawpy.DemosaicAlgorithm.VCD.isSupported is True, "VCD should be supported"
+    assert rawpy.DemosaicAlgorithm.MODIFIED_AHD.isSupported is True, "MODIFIED_AHD should be supported"
+
+    # Actually run postprocessing with GPL demosaic algorithms
+    with rawpy.imread(rawTestPath) as raw:
+        rgb = raw.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AMAZE)
+        assert rgb.shape[2] == 3
+
+    with rawpy.imread(rawTestPath) as raw:
+        rgb = raw.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.LMMSE)
+        assert rgb.shape[2] == 3
+
 def testBadPixelRepair():
     def getColorNeighbors(raw, y, x):
         # 5x5 area around coordinate masked by color of coordinate

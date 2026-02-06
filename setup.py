@@ -79,6 +79,8 @@ def use_pkg_config():
 if (isWindows or isMac) and not useSystemLibraw:
     external_dir = os.path.abspath('external')
     libraw_dir = os.path.join(external_dir, 'LibRaw')
+    demosaic_gpl2_dir = os.path.join(external_dir, 'LibRaw-demosaic-pack-GPL2')
+    demosaic_gpl3_dir = os.path.join(external_dir, 'LibRaw-demosaic-pack-GPL3')
     cmake_build = os.path.join(external_dir, 'LibRaw-cmake', 'build')
     install_dir = os.path.join(cmake_build, 'install')
     
@@ -179,8 +181,8 @@ def windows_libraw_compile():
                     '-DLIBRAW_PATH=' + libraw_dir.replace('\\', '/') + ' ' +\
                     '-DENABLE_X3FTOOLS=ON -DENABLE_6BY9RPI=ON ' +\
                     '-DENABLE_EXAMPLES=OFF -DENABLE_OPENMP=' + enable_openmp_flag + ' -DENABLE_RAWSPEED=OFF ' +\
-                    '-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 ' +\
-                    '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 ' +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=' + demosaic_gpl2_dir.replace('\\', '/') + ' ' +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=' + demosaic_gpl3_dir.replace('\\', '/') + ' ' +\
                     '-DCMAKE_INSTALL_PREFIX=install',
             cmake + ' --build . --target install',
             ]
@@ -227,8 +229,8 @@ def mac_libraw_compile():
                     '-DENABLE_X3FTOOLS=ON -DENABLE_6BY9RPI=ON ' +\
                     '-DENABLE_OPENMP=OFF ' +\
                     '-DENABLE_EXAMPLES=OFF -DENABLE_RAWSPEED=OFF ' +\
-                    '-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 ' +\
-                    '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 ' +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=' + demosaic_gpl2_dir + ' ' +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=' + demosaic_gpl3_dir + ' ' +\
                     '-DCMAKE_INSTALL_PREFIX=install -DCMAKE_INSTALL_NAME_DIR=' + install_name_dir,
             'cmake --build . --target install',
             ]
