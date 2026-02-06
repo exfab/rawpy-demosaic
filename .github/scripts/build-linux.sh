@@ -97,14 +97,14 @@ ${PYBIN}/python -m pip install --upgrade pip
 export PIP_PREFER_BINARY=1
 
 # install compile-time dependencies
-retry ${PYBIN}/pip install numpy==${NUMPY_VERSION} cython setuptools
+retry ${PYBIN}/pip install numpy==${NUMPY_VERSION} cython setuptools build
 
 # List installed packages
 ${PYBIN}/pip freeze
 
 # Build rawpy-demosaic wheel
 export LDFLAGS="-Wl,--strip-debug"
-${PYBIN}/python setup.py bdist_wheel --dist-dir dist-tmp
+${PYBIN}/python -m build --wheel --no-isolation --outdir dist-tmp
 
 # Bundle external shared libraries into wheel and fix the wheel tags
 mkdir dist

@@ -1,4 +1,4 @@
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, Extension
 import subprocess
 import errno
 import os
@@ -275,39 +275,7 @@ extensions = cythonize([Extension("rawpy._rawpy",
               extra_link_args=extra_link_args,
              )])
 
-# make __version__ available (https://stackoverflow.com/a/16084844)
-exec(open('rawpy/_version.py').read())
-
 setup(
-      name = 'rawpy-demosaic',
-      version = __version__,
-      description = 'RAW image processing for Python with GPL demosaic packs, a wrapper for libraw',
-      long_description = open('README.md').read(),
-      long_description_content_type='text/markdown',
-      author = 'Maik Riechert',
-      url = 'https://github.com/exfab/rawpy-demosaic',
-      classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'Natural Language :: English',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-        'Programming Language :: Cython',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12',
-        'Programming Language :: Python :: 3.13',
-        'Programming Language :: Python :: 3.14',
-        'Operating System :: MacOS',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: POSIX',
-        'Operating System :: Unix',
-        'Topic :: Multimedia :: Graphics',
-        'Topic :: Software Development :: Libraries',
-      ],
-      packages = find_packages(),
-      ext_modules = extensions,
-      package_data = package_data,
-      install_requires=['numpy >= 1.26.0']
+    ext_modules=extensions,
+    package_data=package_data,
 )

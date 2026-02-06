@@ -136,7 +136,7 @@ $env:CMAKE_PREFIX_PATH = $pwd.Path + "\vcpkg\installed\x64-windows-static"
 
 # Build the wheel.
 Create-And-Enter-VEnv build
-exec { python -m pip install --upgrade pip wheel setuptools }
+exec { python -m pip install --upgrade pip wheel setuptools build }
 exec { python -m pip install --only-binary :all: numpy==$env:NUMPY_VERSION cython }
-exec { python -u setup.py bdist_wheel }
+exec { python -u -m build --wheel --no-isolation }
 Exit-VEnv
