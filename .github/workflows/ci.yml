@@ -6,10 +6,10 @@ on: [push, pull_request, workflow_dispatch]
 
 # This workflow was written such that the release artifacts (wheels)
 # are built and published in an environment with the least additional dependencies.
-# To achieve that, the execution of tests and the building of docs is done
-# in separate jobs from the job that builds wheels. Both tests and docs require
-# many additional PyPI packages each of which could insert malicious code into
-# the built wheels if everything was running within a single job.
+# To achieve that, the execution of tests is done in a separate job from the job
+# that builds wheels. Tests require many additional PyPI packages each of which
+# could insert malicious code into the built wheels if everything was running
+# within a single job.
 
 # Another concern is the use of third-party actions ('uses:'). In particular,
 # uploaded artifacts (wheels) can be overridden in subsequent build steps/jobs.
@@ -20,13 +20,7 @@ on: [push, pull_request, workflow_dispatch]
 # As a mitigation, in this workflow none of the jobs that run before and
 # including the one that publishes the wheels to PyPI uses third-party actions.
 
-# Lastly, the GITHUB_TOKEN permissions are set to read-only by default except
-# for the job that deploys to GitHub Pages. In that job, a third-party action
-# is used that writes to the 'gh-pages' branch of the repository.
-# This will change in the near future once pages can be deployed directly
-# without writing to a branch by using the new in-beta actions/deploy-pages action.
-# After that, no third-party actions will be used and the token permissions are fully
-# read-only.
+# The GITHUB_TOKEN permissions are set to read-only by default.
 
 permissions: read-all
 
@@ -461,43 +455,10 @@ jobs:
         PYTHON_VERSION: ${{ matrix.config.python-version }}
         NUMPY_VERSION: ${{ matrix.config.numpy-version }}
 
-  docs:
-    runs-on: ubuntu-latest
-
-    needs: build
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-
-    - name: Download wheels from artifact storage
-      uses: actions/download-artifact@v4
-      with:
-        pattern: wheel-*
-        merge-multiple: true
-        path: dist
-
-    - name: Install from wheel
-      run: |
-        pip install --no-deps rawpy-demosaic --no-index -f dist
-        pip install -r dev-requirements.txt
-
-    - name: Build docs
-      run: sphinx-build -b html docs dist-docs
-
-    - name: Store docs HTML as artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: dist-docs/
-
   publish-wheels:
     runs-on: ubuntu-latest
 
-    needs: [test, docs]
+    needs: [test]
 
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
 
@@ -522,20 +483,3 @@ jobs:
     - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
 
-  publish-docs:
-    runs-on: ubuntu-latest
-
-    needs: [publish-wheels]
-
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
