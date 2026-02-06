@@ -1,6 +1,8 @@
 # Development Guide
 
-This document provides guidance on how to get started with rawpy development and how to perform releases.
+This document provides guidance on how to get started with rawpy-demosaic development and how to perform releases.
+
+rawpy-demosaic is a GPL3-licensed fork of [rawpy](https://github.com/letmaik/rawpy) that includes GPL2 and GPL3 demosaic packs by default.
 
 ## Prerequisites
 
@@ -8,7 +10,7 @@ This document provides guidance on how to get started with rawpy development and
 
 - **Python**: 3.9 or higher
 - **Git**: For cloning the repository and submodules
-- **C/C++ Compiler**: 
+- **C/C++ Compiler**:
   - Linux: GCC
   - macOS: Xcode Command Line Tools
   - Windows: Visual Studio 2017 or higher
@@ -33,12 +35,12 @@ This document provides guidance on how to get started with rawpy development and
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/letmaik/rawpy.git
-cd rawpy
+git clone https://github.com/exfab/rawpy-demosaic.git
+cd rawpy-demosaic
 git submodule update --init
 ```
 
-The `git submodule update --init` command clones the LibRaw library and related submodules into the `external/` directory.
+The `git submodule update --init` command clones the LibRaw library, LibRaw-cmake, and GPL demosaic packs into the `external/` directory.
 
 ### 2. Install Python Dependencies
 
@@ -70,9 +72,9 @@ pip install -e .
 ```
 
 This will automatically:
-- Build LibRaw from the git submodules
+- Build LibRaw from the git submodules with GPL demosaic packs enabled
 - Compile the Cython extension
-- Install rawpy in editable mode
+- Install rawpy-demosaic in editable mode
 
 **Note**: On Linux, you may need to update the library cache:
 ```bash
@@ -83,8 +85,10 @@ sudo ldconfig
 ### 4. Verify Installation
 
 ```bash
-python -c "import rawpy; print(rawpy.__version__); print(rawpy.libraw_version)"
+python -c "import rawpy; print(rawpy.__version__); print(rawpy.libraw_version); print(rawpy.flags)"
 ```
+
+Verify that `demosaic_pack_gpl2` and `demosaic_pack_gpl3` are `True` in the flags output.
 
 ## Building
 
@@ -161,11 +165,15 @@ Then open http://localhost:8000 in your browser.
 
 ## Code Structure
 
-- `rawpy/` - Python package source code
+- `rawpy/` - Python package source code (import name is `rawpy`)
   - `_rawpy.pyx` - Cython wrapper around LibRaw
   - `_version.py` - Version information
   - `enhance.py` - Bad pixel detection and repair functionality
 - `external/` - Git submodules for LibRaw and related libraries
+  - `LibRaw/` - LibRaw source code
+  - `LibRaw-cmake/` - CMake build system for LibRaw
+  - `LibRaw-demosaic-pack-GPL2/` - GPL2 demosaic algorithms (VCD, Modified AHD, LMMSE)
+  - `LibRaw-demosaic-pack-GPL3/` - GPL3 demosaic algorithms (AMaZe)
 - `test/` - Test files and test data
 - `docs/` - Sphinx documentation source
 - `.github/` - GitHub Actions workflows and build scripts
@@ -182,14 +190,14 @@ Then open http://localhost:8000 in your browser.
 ### Creating a Stable Release
 
 1. **Update Version Number**
-   
+
    Edit `rawpy/_version.py`:
    ```python
    __version__ = "X.Y.Z"  # e.g., "0.26.0"
    ```
 
 2. **Update LibRaw Submodule** (if needed)
-   
+
    ```bash
    cd external/LibRaw
    git fetch --tags
@@ -199,23 +207,23 @@ Then open http://localhost:8000 in your browser.
    ```
 
 3. **Commit Changes**
-   
+
    ```bash
    git add rawpy/_version.py
    git commit -m "Release vX.Y.Z"
    ```
 
 4. **Create and Push Tag**
-   
+
    ```bash
    git tag vX.Y.Z  # e.g., v0.26.0
    git push origin main --tags
    ```
 
 5. **Automated Build and Release**
-   
+
    GitHub Actions will automatically:
-   - Build wheels for all supported platforms (Linux, macOS, Windows)
+   - Build wheels for all supported platforms (Linux, macOS, Windows) with GPL demosaic packs
    - Run tests on all platforms
    - Build documentation
    - Publish wheels to PyPI (if tests pass)
@@ -226,7 +234,7 @@ Then open http://localhost:8000 in your browser.
 Pre-releases follow the same process but use a pre-release version number:
 
 1. **Update Version Number**
-   
+
    Edit `rawpy/_version.py`:
    ```python
    __version__ = "X.Y.Za1"  # Alpha pre-release (e.g., "0.26.0a1")
@@ -235,7 +243,7 @@ Pre-releases follow the same process but use a pre-release version number:
    ```
 
 2. **Update LibRaw to Snapshot** (if desired)
-   
+
    ```bash
    cd external/LibRaw
    git fetch
@@ -250,7 +258,7 @@ Pre-releases follow the same process but use a pre-release version number:
 
 Users can install pre-releases with:
 ```bash
-pip install --pre rawpy
+pip install --pre rawpy-demosaic
 ```
 
 ### CI/CD Workflow
@@ -262,27 +270,40 @@ The `.github/workflows/ci.yml` workflow handles:
    - macOS (Apple Silicon)
    - Windows (x86_64)
    - Python versions: 3.9, 3.10, 3.11, 3.12, 3.13, and 3.14 (when available)
+   - All wheels include GPL2 and GPL3 demosaic packs
 
 2. **Test Job**: Tests all built wheels across platforms
 
 3. **Docs Job**: Builds Sphinx documentation
 
-4. **Publish Jobs**: 
+4. **Publish Jobs**:
    - Only triggered on tag push (`refs/tags/v*`)
    - Publishes wheels to PyPI
    - Deploys documentation to GitHub Pages
+
+## Syncing with Upstream
+
+To sync with the upstream rawpy repository:
+
+```bash
+git remote add upstream https://github.com/letmaik/rawpy.git
+git fetch upstream
+git merge upstream/main
+# Resolve any conflicts, ensuring GPL pack flags remain enabled
+```
 
 ## Environment Variables
 
 ### Build-time Variables
 
-- `RAWPY_BUILD_GPL_CODE=1` - Include GPL demosaic packs (macOS/Windows only)
 - `RAWPY_USE_SYSTEM_LIBRAW=1` - Use system LibRaw instead of building from source
 - `PKG_CONFIG` - Path to pkg-config binary
 - `PYTHON_VERSION` - Python version for build scripts (e.g., "3.12")
 - `PYTHON_ARCH` - Architecture (e.g., "x86_64", "aarch64", "arm64")
 - `NUMPY_VERSION` - NumPy version constraint (e.g., "2.0.*")
 - `MACOS_MIN_VERSION` - Minimum macOS version for build (e.g., "11.0")
+
+**Note**: GPL demosaic packs are always enabled in this fork. The `RAWPY_BUILD_GPL_CODE` environment variable from upstream rawpy is no longer used.
 
 ## Troubleshooting
 
@@ -317,6 +338,7 @@ The CI workflow implements several security best practices:
 
 ## Getting Help
 
-- **Issues**: https://github.com/letmaik/rawpy/issues
+- **Issues**: https://github.com/exfab/rawpy-demosaic/issues
+- **Upstream Issues**: https://github.com/letmaik/rawpy/issues
 - **API Documentation**: https://letmaik.github.io/rawpy/api/
 - **Tutorials**: https://github.com/letmaik/rawpy-notebooks

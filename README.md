@@ -2,12 +2,27 @@
 <a href="https://en.wikipedia.org/wiki/Bayer_filter"><img width="500" src="https://raw.githubusercontent.com/letmaik/rawpy/main/logo/logo.png"></a>
 </p>
 
-rawpy is an easy-to-use Python wrapper for the [LibRaw library][libraw].
+# rawpy-demosaic
+
+**This is a GPL3-licensed fork of [rawpy](https://github.com/letmaik/rawpy) that includes GPL2 and GPL3 demosaic packs by default.**
+
+rawpy-demosaic is an easy-to-use Python wrapper for the [LibRaw library][libraw]
+with GPL demosaic algorithms (AMaZe, VCD, Modified AHD, LMMSE, and more) enabled out of the box.
 It also contains some extra functionality for finding and repairing hot/dead pixels.
+
+> **License Notice**: This fork is licensed under GPL-3.0-or-later due to inclusion of
+> GPL-licensed demosaic algorithms. It cannot be used in proprietary software.
+> See [LICENSE](LICENSE) for details.
 
 [API Documentation](https://letmaik.github.io/rawpy/api/)
 
 [Jupyter notebook tutorials](https://github.com/letmaik/rawpy-notebooks/blob/master/README.md)
+
+## Features over upstream rawpy
+
+- AMaZe demosaic algorithm (GPL3)
+- VCD, Modified AHD, LMMSE demosaic algorithms (GPL2)
+- All GPL demosaic features enabled by default in all wheels
 
 ## Sample code
 
@@ -29,6 +44,24 @@ Save as 16-bit linear image:
 with rawpy.imread(path) as raw:
     rgb = raw.postprocess(gamma=(1,1), no_auto_bright=True, output_bps=16)
 iio.imwrite('linear.tiff', rgb)
+```
+
+Use GPL demosaic algorithms:
+
+```python
+from rawpy import DemosaicAlgorithm
+
+with rawpy.imread(path) as raw:
+    # AMaZe algorithm (GPL3)
+    rgb = raw.postprocess(demosaic_algorithm=DemosaicAlgorithm.AMAZE)
+
+with rawpy.imread(path) as raw:
+    # VCD algorithm (GPL2)
+    rgb = raw.postprocess(demosaic_algorithm=DemosaicAlgorithm.VCD)
+
+with rawpy.imread(path) as raw:
+    # LMMSE algorithm (GPL2)
+    rgb = raw.postprocess(demosaic_algorithm=DemosaicAlgorithm.LMMSE)
 ```
 
 Extract embedded thumbnail/preview image and save as JPEG:
@@ -64,22 +97,22 @@ for path in paths:
 
 ## Installation
 
-Install rawpy by running:
+Install rawpy-demosaic by running:
 ```sh
-pip install rawpy
+pip install rawpy-demosaic
 ```
 
 64-bit binary wheels are provided for Linux, macOS, and Windows.
 
 ### Stable vs. pre-release
 
-All stable rawpy releases are always built against a stable LibRaw library release.
+All stable rawpy-demosaic releases are always built against a stable LibRaw library release.
 You can output the LibRaw version with `print(rawpy.libraw_version)`.
 
-rawpy pre-releases have version numbers like `0.15.0a1` and are built against
+rawpy-demosaic pre-releases have version numbers like `0.15.0a1` and are built against
 a recent LibRaw snapshot. To install a pre-release, run:
 ```sh
-pip install --pre rawpy
+pip install --pre rawpy-demosaic
 ```
 
 ### Optional features
@@ -93,18 +126,15 @@ The following table shows which PyPI binary wheels support which features.
 | RedCine codec      | yes     | yes   | yes   |
 | DNG deflate codec  | yes     | yes   | yes   |
 | DNG lossy codec    | yes     | yes   | yes   |
-| Demosaic Pack GPL2 | no      | no    | no    |
-| Demosaic Pack GPL3 | no      | no    | no    |
+| Demosaic Pack GPL2 | yes     | yes   | yes   |
+| Demosaic Pack GPL3 | yes     | yes   | yes   |
 | OpenMP             | yes     | no    | yes   |
 
 Tip: You can dynamically query supported features by inspecting the `rawpy.flags` dictionary.
 
-Note on GPL demosaic packs: The GPL2 and GPL3 demosaic packs are not included as rawpy is licensed
-under the MIT license which is incompatible with GPL.
-
 ### Installation from source on Linux/macOS
 
-For macOS, LibRaw is built as part of the rawpy build (see external/).
+For macOS, LibRaw is built as part of the rawpy-demosaic build (see external/).
 For Linux, you need to install the LibRaw library on your system.
 
 On Ubuntu, you can get (an outdated) version with:
@@ -124,16 +154,16 @@ cp -R ../libraw-cmake/* .
 cmake .
 sudo make install
 ```
-    
-After that, install rawpy using:
+
+After that, install rawpy-demosaic using:
 
 ```sh
-git clone https://github.com/letmaik/rawpy
-cd rawpy
+git clone https://github.com/exfab/rawpy-demosaic
+cd rawpy-demosaic
 pip install numpy cython
 pip install .
 ```
-    
+
 On Linux, if you get the error "ImportError: libraw.so: cannot open shared object file: No such file or directory"
 when trying to use rawpy, then do the following:
 
@@ -150,7 +180,7 @@ for libraries by default in some Linux distributions.
 These instructions are experimental and support is not provided for them.
 Typically, there should be no need to build manually since wheels are hosted on PyPI.
 
-You need to have Visual Studio installed to build rawpy.
+You need to have Visual Studio installed to build rawpy-demosaic.
 
 In a PowerShell window:
 ```sh
@@ -158,8 +188,8 @@ $env:USE_CONDA = '1'
 $env:PYTHON_VERSION = '3.7'
 $env:PYTHON_ARCH = '64'
 $env:NUMPY_VERSION = '1.14.*'
-git clone https://github.com/letmaik/rawpy
-cd rawpy
+git clone https://github.com/exfab/rawpy-demosaic
+cd rawpy-demosaic
 .github/scripts/build-windows.ps1
 ```
 The above will download all build dependencies (including a Python installation)
@@ -190,7 +220,7 @@ def process_raw(filename):
 if __name__ == '__main__':
     # Set the start method to 'spawn' before creating any processes
     mp.set_start_method('spawn')
-    
+
     with mp.Pool(processes=4) as pool:
         results = pool.map(process_raw, ['image1.nef', 'image2.nef'])
 ```
@@ -216,7 +246,18 @@ This error occurs when rawpy/LibRaw cannot recognize the file as a supported RAW
 **What you can do:**
 - Verify the file is a genuine RAW file from a supported camera
 - Try opening the file with the camera manufacturer's software to confirm it's valid
-- Check if you're using the latest version of rawpy, as newer versions may support additional cameras
+- Check if you're using the latest version of rawpy-demosaic, as newer versions may support additional cameras
 - If you have a headerless or proprietary RAW format, you may need to convert it to a standard format like DNG using the camera manufacturer's tools first
+
+## Upstream
+
+This fork is based on [rawpy](https://github.com/letmaik/rawpy) by Maik Riechert.
+To sync with upstream:
+
+```bash
+git remote add upstream https://github.com/letmaik/rawpy.git
+git fetch upstream
+git merge upstream/main
+```
 
 [libraw]: https://www.libraw.org

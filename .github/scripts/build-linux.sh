@@ -75,6 +75,10 @@ cmake .. \
     -DENABLE_6BY9RPI=ON \
     -DENABLE_EXAMPLES=OFF \
     -DENABLE_RAWSPEED=OFF \
+    -DENABLE_DEMOSAIC_PACK_GPL2=ON \
+    -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 \
+    -DENABLE_DEMOSAIC_PACK_GPL3=ON \
+    -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 \
     -DCMAKE_BUILD_TYPE=Release
 make
 make install -j$(nproc)
@@ -96,11 +100,11 @@ retry ${PYBIN}/pip install numpy==${NUMPY_VERSION} cython setuptools
 # List installed packages
 ${PYBIN}/pip freeze
 
-# Build rawpy wheel
+# Build rawpy-demosaic wheel
 export LDFLAGS="-Wl,--strip-debug"
 ${PYBIN}/python setup.py bdist_wheel --dist-dir dist-tmp
 
 # Bundle external shared libraries into wheel and fix the wheel tags
 mkdir dist
-auditwheel repair dist-tmp/rawpy*.whl -w dist
+auditwheel repair dist-tmp/rawpy_demosaic*.whl -w dist
 ls -al dist

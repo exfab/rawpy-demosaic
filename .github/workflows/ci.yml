@@ -483,7 +483,7 @@ jobs:
 
     - name: Install from wheel
       run: |
-        pip install --no-deps rawpy --no-index -f dist
+        pip install --no-deps rawpy-demosaic --no-index -f dist
         pip install -r dev-requirements.txt
 
     - name: Build docs
@@ -503,7 +503,7 @@ jobs:
 
     environment:
       name: pypi
-      url: https://pypi.org/p/rawpy
+      url: https://pypi.org/p/rawpy-demosaic
     
     permissions:
       id-token: write

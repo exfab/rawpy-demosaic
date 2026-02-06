@@ -11,10 +11,10 @@ source env/$VENV/bin/activate
 python -m pip install --upgrade pip
 export PIP_PREFER_BINARY=1
 
-# Install rawpy
-pip install dist/rawpy*cp${PYVER}*macosx*${PYTHON_ARCH}*.whl
+# Install rawpy-demosaic
+pip install dist/rawpy_demosaic*cp${PYVER}*macosx*${PYTHON_ARCH}*.whl
 
-# Test installed rawpy
+# Test installed rawpy-demosaic
 pip install -r dev-requirements.txt "numpy==${NUMPY_VERSION}"
 mkdir tmp_for_test
 pushd tmp_for_test

@@ -11,15 +11,10 @@ from urllib.request import urlretrieve
 import numpy
 from Cython.Build import cythonize
 
-# As rawpy is distributed under the MIT license, it cannot use or distribute
-# GPL'd code. This is relevant only for the binary wheels which would have to
-# bundle the GPL'd code/algorithms (extra demosaic packs).
-# Note: RAWPY_BUILD_GPL_CODE=1 only has an effect for macOS and Windows builds
-#       because libraw is built from source here, whereas for Linux we look
-#       for the library on the system.
+# rawpy-demosaic is distributed under GPL-3.0-or-later and always includes
+# GPL2 and GPL3 demosaic packs (AMaZe, VCD, Modified AHD, LMMSE, etc.).
 # Note: Building GPL demosaic packs only works with libraw <= 0.18.
 #       See https://github.com/letmaik/rawpy/issues/72.
-buildGPLCode = os.getenv('RAWPY_BUILD_GPL_CODE') == '1'
 useSystemLibraw = os.getenv('RAWPY_USE_SYSTEM_LIBRAW') == '1'
 
 # don't treat mingw as Windows (https://stackoverflow.com/a/51200002)
@@ -184,9 +179,8 @@ def windows_libraw_compile():
                     '-DLIBRAW_PATH=' + libraw_dir.replace('\\', '/') + ' ' +\
                     '-DENABLE_X3FTOOLS=ON -DENABLE_6BY9RPI=ON ' +\
                     '-DENABLE_EXAMPLES=OFF -DENABLE_OPENMP=' + enable_openmp_flag + ' -DENABLE_RAWSPEED=OFF ' +\
-                    ('-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 ' +\
-                     '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 '
-                     if buildGPLCode else '') +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 ' +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 ' +\
                     '-DCMAKE_INSTALL_PREFIX=install',
             cmake + ' --build . --target install',
             ]
@@ -196,7 +190,7 @@ def windows_libraw_compile():
         if code != 0:
             sys.exit(code)
     os.chdir(cwd)
-    
+
     # bundle runtime dlls
     dll_runtime_libs = [('raw_r.dll', os.path.join(install_dir, 'bin'))]
     
@@ -233,9 +227,8 @@ def mac_libraw_compile():
                     '-DENABLE_X3FTOOLS=ON -DENABLE_6BY9RPI=ON ' +\
                     '-DENABLE_OPENMP=OFF ' +\
                     '-DENABLE_EXAMPLES=OFF -DENABLE_RAWSPEED=OFF ' +\
-                    ('-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 ' +\
-                     '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 '
-                     if buildGPLCode else '') +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL2=ON -DDEMOSAIC_PACK_GPL2_RPATH=../../LibRaw-demosaic-pack-GPL2 ' +\
+                    '-DENABLE_DEMOSAIC_PACK_GPL3=ON -DDEMOSAIC_PACK_GPL3_RPATH=../../LibRaw-demosaic-pack-GPL3 ' +\
                     '-DCMAKE_INSTALL_PREFIX=install -DCMAKE_INSTALL_NAME_DIR=' + install_name_dir,
             'cmake --build . --target install',
             ]
@@ -266,7 +259,7 @@ if any(s in cmdline for s in ['clean', 'sdist']):
     # to include package data files, but we don't want .dll's and .xml
     # files in our source distribution. Therefore, to prevent accidents,
     # we help a little...
-    egg_info = 'rawpy.egg-info'
+    egg_info = 'rawpy_demosaic.egg-info'
     print('removing', egg_info)
     shutil.rmtree(egg_info, ignore_errors=True)
 
@@ -284,18 +277,18 @@ extensions = cythonize([Extension("rawpy._rawpy",
 exec(open('rawpy/_version.py').read())
 
 setup(
-      name = 'rawpy',
+      name = 'rawpy-demosaic',
       version = __version__,
-      description = 'RAW image processing for Python, a wrapper for libraw',
+      description = 'RAW image processing for Python with GPL demosaic packs, a wrapper for libraw',
       long_description = open('README.md').read(),
       long_description_content_type='text/markdown',
       author = 'Maik Riechert',
-      url = 'https://github.com/letmaik/rawpy',
+      url = 'https://github.com/exfab/rawpy-demosaic',
       classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Cython',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.9',

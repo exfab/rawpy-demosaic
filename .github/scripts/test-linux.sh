@@ -21,7 +21,7 @@ ${PYBIN}/python -m pip install --upgrade pip
 export PIP_PREFER_BINARY=1
 
 # Install package and test
-${PYBIN}/pip install ./dist/rawpy*cp${PYVER}*manylinux*${PYTHON_ARCH}*.whl
+${PYBIN}/pip install ./dist/rawpy_demosaic*cp${PYVER}*manylinux*${PYTHON_ARCH}*.whl
 ${PYBIN}/pip install -r dev-requirements.txt "numpy==${NUMPY_VERSION}"
 
 mkdir tmp_for_test

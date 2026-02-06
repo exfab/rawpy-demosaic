@@ -44,8 +44,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'rawpy'
-copyright = u'2014, Maik Riechert'
+project = u'rawpy-demosaic'
+copyright = u'2014, Maik Riechert. Fork maintained by exfab'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -180,7 +180,7 @@ html_extra_path = ['gh-pages']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'rawpydoc'
+htmlhelp_basename = 'rawpy-demosaic-doc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -200,7 +200,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'rawpy.tex', u'rawpy Documentation',
+  ('index', 'rawpy-demosaic.tex', u'rawpy-demosaic Documentation',
    u'Maik Riechert', 'manual'),
 ]
 
@@ -230,7 +230,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'rawpy', u'rawpy Documentation',
+    ('index', 'rawpy-demosaic', u'rawpy-demosaic Documentation',
      [u'Maik Riechert'], 1)
 ]
 
@@ -244,8 +244,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'rawpy', u'rawpy Documentation',
-   u'Maik Riechert', 'rawpy', 'One line description of project.',
+  ('index', 'rawpy-demosaic', u'rawpy-demosaic Documentation',
+   u'Maik Riechert', 'rawpy-demosaic',
+   'RAW image processing for Python with GPL demosaic packs.',
    'Miscellaneous'),
 ]
 

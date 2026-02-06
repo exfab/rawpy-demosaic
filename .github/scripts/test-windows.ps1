@@ -82,7 +82,7 @@ Get-ChildItem env:
 # Install and import in an empty environment.
 # This is to catch DLL issues that may be hidden with dependencies.
 Create-And-Enter-VEnv import-test
-python -m pip uninstall -y rawpy
+python -m pip uninstall -y rawpy-demosaic
 ls dist\*cp${PYVER}*win*.whl | % { exec { python -m pip install $_ } }
 
 # Avoid using in-source package during tests
@@ -95,7 +95,7 @@ Exit-VEnv
 
 # Run test suite with all required and optional dependencies
 Create-And-Enter-VEnv testsuite
-python -m pip uninstall -y rawpy
+python -m pip uninstall -y rawpy-demosaic
 ls dist\*cp${PYVER}*win*.whl | % { exec { python -m pip install $_ } }
 exec { python -m pip install -r dev-requirements.txt numpy==$env:NUMPY_VERSION }
 
