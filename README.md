@@ -2,7 +2,9 @@
 <a href="https://en.wikipedia.org/wiki/Bayer_filter"><img width="500" src="https://raw.githubusercontent.com/letmaik/rawpy/main/logo/logo.png"></a>
 </p>
 
-# rawpy-demosaic
+# rawpy-demosaic (dropped)
+
+**dropped in favor of using rawtherapee for raw conversion)
 
 **This is a GPL3-licensed fork of [rawpy](https://github.com/letmaik/rawpy) that includes GPL2 and GPL3 demosaic packs by default.**
 
